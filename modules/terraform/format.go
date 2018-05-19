@@ -6,6 +6,25 @@ import (
 	"strings"
 )
 
+// FormatArgsFiles converts the list of terraform var files into terraform CLI input parameter
+func FormatArgsFiles(customVarFiles []string) string {
+	// Take all entries form customVars and put into a -var-file=""
+	varsAsArgs := ""
+
+	for _, v := range customVarFiles {
+		argValue := fmt.Sprintf("-var-file=%s", v)
+		varsAsArgs = fmt.Sprintf("%s %s ", varsAsArgs, argValue)
+	}
+
+	// FIXME: Looks ugly, but works without the for loop
+	if len(customVarFiles) > 0 {
+		varsAsArgs = "-var-file="
+		varsAsArgs += fmt.Sprintf(strings.Join(customVarFiles, " -var-file="))
+	}
+
+	return varsAsArgs
+}
+
 // Convert the inputs to a format palatable to terraform. This includes converting the given vars to the format the
 // Terraform CLI expects (-var key=value).
 func FormatArgs(customVars map[string]interface{}, args ...string) []string {
